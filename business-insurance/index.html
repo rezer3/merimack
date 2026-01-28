@@ -83,7 +83,7 @@
       height:3px;border-radius:999px;background:var(--text);
     }
 
-    /* Hero (ILH-ish: big  background + centered glass card) */
+    /* Hero (ILH-ish: big background + centered glass card) */
     .hero{
       position:relative;
       min-height:520px;
@@ -494,30 +494,7 @@
 <body>
 <header>
     <div class="wrap">
-      <div class="right">
-          <a href="/contact">Contact</a>
-        </div>
-      </div>
-
-      <div class="mainBar">
-        <a class="brand" href="/">
-          <div class="mark">M</div>
-          <div class="brandText">
-            <div class="name">Merimack</div>
-            <div class="tag">One-stop shop for insurance</div>
-          </div>
-        </a>
-
-        <div class="actions">
-          <a class="phonePill" href="tel:+18137618881">(813) 761-8881</a>
-          <button class="menuBtn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menuOverlay">
-            <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="catBar">
+<div class="catBar">
       <div class="wrap">
         <nav class="cats" aria-label="Primary categories">
           <a class="cat active" href="/business-insurance">Business Insurance</a>
@@ -550,8 +527,7 @@
           These links can be placeholders during migration.
         </div>
       </div>
-
-  <section class="hero heroSmall">
+<section class="hero heroSmall">
     <div class="wrap heroInner">
       <div class="heroCard">
         <h1>Business Insurance</h1>
@@ -843,7 +819,6 @@
       </div>
     </div>
   </main>
-
 <footer>
     <div class="wrap">
       <div class="foot">
@@ -865,8 +840,7 @@
       </div>
     </div>
   </footer>
-
-  <script>
+<script>
     document.getElementById("yr").textContent = new Date().getFullYear();
 
     // Menu overlay
@@ -948,6 +922,5 @@
     q.addEventListener("input", () => applyFilter(q.value));
     form.addEventListener("submit", (e)=>{ e.preventDefault(); applyFilter(q.value); });
   </script>
-
 </body>
 </html>
