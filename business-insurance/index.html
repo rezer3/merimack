@@ -3,22 +3,951 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Merimack</title>
+  <title>Merimack — One-stop shop for insurance</title>
+  <meta name="description" content="Merimack is a one-stop shop for business insurance, life, Medicare, annuities, and long-term care." />
   <style>
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-         margin:0;padding:40px;background:#f7f7f7;color:#0b1220}
-    .box{max-width:720px;margin:0 auto;background:#fff;border:2px solid #d1d5db;
-         border-radius:12px;padding:28px}
-    h1{margin:0 0 10px 0}
-    p{color:#4b5563}
-    a{color:#f96302;text-decoration:none;font-weight:700}
+    :root{
+      --bg:#f3f4f8;
+      --card:#ffffff;
+      --text:#0b1220;
+      --muted:#5b677a;
+      --line:#e6e8ef;
+      --shadow:0 14px 40px rgba(2,6,23,.14);
+      --shadow2:0 10px 28px rgba(2,6,23,.10);
+      --brand:#c62117;
+      --accent:#1d4ed8;
+      --radius:20px;
+      --max:1160px;
+      --font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+    /* ILH-like header structure */
+    .mainBar{
+      height:68px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;min-width:280px;
+    }
+    .mark{
+      width:30px;height:30px;border:1px solid var(--brand);border-radius:8px;
+      display:grid;place-items:center;color:var(--brand);font-weight:900;font-size:15px;
+    }
+    .brandText{
+      display:flex;flex-direction:column;line-height:1.05;
+    }
+    .brandText .name{font-size:22px;font-weight:900;letter-spacing:-.2px}
+    .brandText .tag{font-size:12px;color:var(--muted);margin-top:3px}
+    .actions{display:flex;align-items:center;gap:10px}
+    .phonePill{
+      border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 12px;
+      font-weight:800;font-size:13px;box-shadow:0 8px 18px rgba(2,6,23,.08);white-space:nowrap
+    }
+    .menuBtn{
+      width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:#fff;
+      display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 18px rgba(2,6,23,.08)
+    }
+    .menuBtn:active{transform:translateY(1px)}
+    .burger{width:18px;height:12px;position:relative}
+    .burger i{position:absolute;left:0;right:0;height:2px;background:#0b1220;border-radius:2px}
+    .burger i:nth-child(1){top:0}
+    .burger i:nth-child(2){top:5px;opacity:.9}
+    .burger i:nth-child(3){bottom:0;opacity:.85}
+
+    /* Category nav (ILH-like horizontal tabs) */
+    .catBar{
+      border-top:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+    }
+    .cats{
+      display:flex;align-items:center;gap:22px;
+      overflow:auto;scrollbar-width:none;
+      padding:10px 0;
+    }
+    .cats::-webkit-scrollbar{display:none}
+    .cat{
+      position:relative;
+      padding:10px 2px;
+      font-size:13px;
+      font-weight:800;
+      color:#253049;
+      white-space:nowrap;
+    }
+    .cat.active{color:var(--text)}
+    .cat.active::after{
+      content:"";
+      position:absolute;left:0;right:0;bottom:2px;
+      height:3px;border-radius:999px;background:var(--text);
+    }
+
+    /* Hero (ILH-ish: big  background + centered glass card) */
+    .hero{
+      position:relative;
+      min-height:520px;
+      background:
+        linear-gradient(to bottom, rgba(15,23,42,.18), rgba(15,23,42,.34)),
+        url("https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=2400&q=70");
+      background-size:cover;background-position:center;
+      border-bottom:1px solid var(--line);
+    }
+    .heroInner{
+      padding:46px 0 52px 0;
+      display:flex;justify-content:center;
+    }
+    .heroCard{
+      width:min(940px, 100%);
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(230,232,239,.9);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:26px;
+    }
+    .heroCard h1{
+      margin:0;
+      font-size:40px;
+      letter-spacing:-.9px;
+      line-height:1.08;
+      text-align:center;
+    }
+    .heroCard p{
+      margin:10px auto 18px auto;
+      max-width:680px;
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+
+    /* Quote form (kept very ILH-like: simple, strong button) */
+    .form{
+      background:#fff;border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow2);
+    }
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+    input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+    input:focus{border-color:rgba(29,78,216,.35);box-shadow:0 0 0 4px rgba(29,78,216,.12)}
+    .row{margin-top:12px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px 0;justify-content:center}
+    .tab{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:9px 12px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      color:#1f2a44;
+    }
+    .tab.active{
+      border-color:rgba(29,78,216,.25);
+      box-shadow:0 10px 22px rgba(29,78,216,.12);
+    }
+    .consent{
+      display:flex;align-items:flex-start;gap:10px;
+      margin-top:12px;
+      font-size:12px;color:var(--muted);line-height:1.35
+    }
+    .consent input{width:auto;margin-top:2px}
+    .btn{
+      margin-top:14px;
+      width:100%;
+      border:0;border-radius:16px;
+      background:var(--accent);
+      color:#fff;font-weight:900;
+      padding:13px 14px;
+      cursor:pointer;
+      box-shadow:0 14px 30px rgba(29,78,216,.22);
+      font-size:14px;
+    }
+    .btn:active{transform:translateY(1px)}
+    .fine{
+      text-align:center;
+      margin-top:10px;
+      font-size:11px;color:var(--muted)
+    }
+
+    /* Content */
+    main{padding:28px 0 56px 0}
+    .sectionTitle{margin:0 0 14px 0;font-size:22px;letter-spacing:-.4px}
+    .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .tile{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px;
+      box-shadow:0 10px 24px rgba(2,6,23,.06);
+      min-height:98px;
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .tile .top{display:flex;align-items:center;gap:10px;font-weight:900}
+    .icon{
+      width:36px;height:36px;border-radius:14px;
+      background:rgba(29,78,216,.10);
+      display:grid;place-items:center;
+      color:#1d4ed8;font-weight:900;
+    }
+    .tile p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+
+    footer{border-top:1px solid var(--line);background:#fff;padding:26px 0;color:var(--muted);font-size:13px}
+    .foot{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .foot b{color:var(--text)}
+    .foot a{color:var(--muted)}
+    .foot a:hover{color:var(--text)}
+
+    /* Menu overlay */
+    .overlay{
+      position:fixed;inset:68px 0 0 0; /* under sticky header stack */
+      background:rgba(15,23,42,.28);
+      display:none;
+      z-index:60;
+    }
+    .overlay.open{display:block}
+    .sheet{
+      background:#fff;border-top:1px solid var(--line);
+      box-shadow:0 25px 80px rgba(2,6,23,.25);
+      padding:18px 0 22px 0;
+    }
+    .sheetHead{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:0 0 14px 0;
+    }
+    .closeBtn{
+      border:1px solid var(--line);background:#fff;border-radius:14px;
+      padding:9px 12px;cursor:pointer;
+    }
+    .menuList{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .menuItem{
+      border:1px solid var(--line);
+      background:#fff;border-radius:18px;
+      padding:14px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      box-shadow:0 10px 22px rgba(2,6,23,.06);
+      font-weight:900;
+    }
+    .menuItem span{color:var(--muted);font-weight:800}
+    .chev{color:#94a3b8;font-weight:900}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .tiles{grid-template-columns:1fr 1fr}
+      .brand{min-width:auto}
+      .topLinks{display:none}
+      .overlay{inset:68px 0 0 0}
+    }
+    @media (max-width: 640px){
+      .grid2{grid-template-columns:1fr}
+      .tiles{grid-template-columns:1fr}
+      .phonePill{display:none}
+      .heroCard h1{font-size:32px}
+    }
+  
+    
+    /* Zip intake (replaces the multi-field form) */
+    .zipWrap{margin-top:6px}
+    .zipForm{
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:12px;
+      padding:16px;
+      box-shadow:var(--shadow2);
+    }
+    .zipRow{
+      display:flex;
+      align-items:flex-end;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .zipField{flex:1;min-width:240px;max-width:420px}
+    .zipBtn{width:auto;min-width:160px}
+    @media (max-width: 640px){
+      .zipBtn{width:100%}
+      .zipField{max-width:none}
+      .zipRow{align-items:stretch}
+    }
+
+    
+    /* Business Insurance page additions */
+    .heroSmall{min-height:440px}
+    .searchForm{
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:12px;
+      padding:16px;
+      box-shadow:var(--shadow2);
+      margin-top:6px;
+    }
+    .searchRow{
+      display:flex;
+      align-items:flex-end;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .searchField{flex:1;min-width:260px;max-width:520px}
+    .searchBtn{width:auto;min-width:160px}
+    .pageIntro{margin:18px 0 18px 0}
+    .pageTitleRow h2{margin:0;font-size:22px;letter-spacing:-.3px;font-weight:950}
+    .pageTitleRow .muted{margin-top:6px;color:var(--muted);font-size:13px}
+    .classGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px 22px;
+      align-items:start;
+      margin-top:16px;
+    }
+    .classGroup{
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 22px rgba(0,0,0,.10);
+      padding:14px 14px 12px 14px;
+    }
+    .classGroup h3{
+      margin:0 0 10px 0;
+      font-size:15px;
+      font-weight:950;
+      letter-spacing:-.1px;
+    }
+    .classGroup ul{
+      margin:0;
+      padding-left:18px;
+      color:#111827;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .classGroup li{margin:4px 0;color:#111827}
+    .classGroup li::marker{color:var(--brand)}
+    .ctaBand{
+      margin-top:22px;
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 10px 22px rgba(0,0,0,.10);
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .ctaTitle{font-weight:950;letter-spacing:-.2px}
+    .ctaSub{color:var(--muted);font-size:13px;margin-top:4px}
+    .ctaRight{display:flex;gap:10px;flex-wrap:wrap}
+    .ctaBtn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:11px 14px;
+      border-radius:10px;
+      border:2px solid rgba(0,0,0,.30);
+      background:var(--brand);
+      color:#fff;
+      font-weight:950;
+      box-shadow:0 6px 0 rgba(0,0,0,.30), 0 12px 20px rgba(0,0,0,.16);
+    }
+    .ctaBtn:active{transform:translateY(2px);box-shadow:0 4px 0 rgba(0,0,0,.30), 0 10px 16px rgba(0,0,0,.12)}
+    .ctaBtn.ghost{
+      background:#fff;
+      color:#111827;
+      border-color:var(--line);
+      box-shadow:0 6px 12px rgba(0,0,0,.10);
+    }
+    .ctaBtn.ghost:active{transform:translateY(1px);box-shadow:0 4px 10px rgba(0,0,0,.10)}
+    @media (max-width: 980px){
+      .classGrid{grid-template-columns:1fr}
+    }
+    @media (max-width: 640px){
+      .searchBtn{width:100%}
+      .searchField{max-width:none}
+      .searchRow{align-items:stretch}
+    }
+
+    /* --- Rugged / "Home Depot" material language overrides --- */
+    :root{
+      --bg:#f7f7f7;
+      --card:#ffffff;
+      --text:#0b1220;
+      --muted:#4b5563;
+      --line:#d1d5db;
+      --shadow:0 10px 22px rgba(0,0,0,.14);
+      --shadow2:0 8px 18px rgba(0,0,0,.12);
+      --brand:#f96302;   /* Home-Depot-ish orange */
+      --accent:#f96302;
+      --radius:12px;
+    }
+
+    body{background:var(--bg);font-weight:500}
+
+    header{background:#ffffff;backdrop-filter:none;border-bottom:2px solid var(--line)}
+    .catBar{background:#ffffff}
+    .topLinks{color:#374151}
+    .topLinks a{color:#374151}
+    .topLinks a:hover{color:#0b1220}
+
+    .mark{border:2px solid var(--brand);border-radius:6px;color:var(--brand)}
+    .brandText .name{font-weight:950}
+    .brandText .tag{color:#374151}
+
+    .phonePill{border:2px solid var(--line);box-shadow:0 6px 12px rgba(0,0,0,.10)}
+    .menuBtn{border:2px solid var(--line);border-radius:10px;box-shadow:0 6px 12px rgba(0,0,0,.10)}
+
+    .cats{padding:8px 0}
+    .cat{font-weight:900;color:#111827}
+    .cat.active::after{height:4px;bottom:2px;background:var(--brand)}
+
+    .hero{
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,.48)),
+        url("https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=2400&q=70");
+      border-bottom:2px solid var(--line);
+    }
+
+    .heroCard{
+      background:#ffffff;
+      border:2px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+    .heroCard h1{font-weight:950}
+    .heroCard p{color:#374151}
+
+    .form{
+      border:2px solid var(--line);
+      border-radius:12px;
+      box-shadow:var(--shadow2);
+    }
+
+    input{
+      border:2px solid var(--line);
+      border-radius:10px;
+    }
+    input:focus{
+      border-color:rgba(249,99,2,.55);
+      box-shadow:0 0 0 4px rgba(249,99,2,.18);
+    }
+
+    .tab{
+      border:2px solid var(--line);
+      border-radius:999px;
+      font-weight:950;
+    }
+    .tab.active{
+      border-color:rgba(249,99,2,.55);
+      box-shadow:0 10px 20px rgba(249,99,2,.14);
+    }
+
+    .btn{
+      background:var(--brand);
+      border-radius:10px;
+      box-shadow:0 7px 0 rgba(0,0,0,.30), 0 14px 26px rgba(0,0,0,.18);
+      font-weight:950;
+      text-transform:none;
+    }
+    .btn:active{
+      transform:translateY(2px);
+      box-shadow:0 4px 0 rgba(0,0,0,.30), 0 10px 18px rgba(0,0,0,.14);
+    }
+
+    .overlay{background:rgba(0,0,0,.40)}
+    .sheet{border-top:2px solid var(--line)}
+    .closeBtn{border:2px solid var(--line);border-radius:10px}
+
+    .menuItem{
+      border:2px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 8px 16px rgba(0,0,0,.10);
+      font-weight:950;
+    }
+
+    .tiles{gap:12px}
+    .tile{
+      border:2px solid var(--line);
+      border-radius:12px;
+      box-shadow:0 8px 16px rgba(0,0,0,.10);
+    }
+    .tile .top{font-weight:950}
+    .icon{
+      border-radius:8px;
+      background:#111827;
+      color:#ffffff;
+    }
+
+    footer{border-top:2px solid var(--line)}
+
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>Merimack</h1>
-    <p>This page is coming soon.</p>
-    <p><a href="/">← Back to home</a></p>
-  </div>
+<header>
+    <div class="wrap">
+      <div class="right">
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+
+      <div class="mainBar">
+        <a class="brand" href="/">
+          <div class="mark">M</div>
+          <div class="brandText">
+            <div class="name">Merimack</div>
+            <div class="tag">One-stop shop for insurance</div>
+          </div>
+        </a>
+
+        <div class="actions">
+          <a class="phonePill" href="tel:+18137618881">(813) 761-8881</a>
+          <button class="menuBtn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menuOverlay">
+            <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="catBar">
+      <div class="wrap">
+        <nav class="cats" aria-label="Primary categories">
+          <a class="cat active" href="/business-insurance">Business Insurance</a>
+          <a class="cat" href="/life-insurance">Life Insurance</a>
+          <a class="cat" href="/medicare">Medicare</a>
+          <a class="cat" href="/annuities">Annuities</a>
+          <a class="cat" href="/long-term-care">Long Term Care</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+<div class="overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="sheet">
+      <div class="wrap">
+        <div class="sheetHead">
+          <div style="font-weight:900;letter-spacing:-.2px;">Menu</div>
+          <button class="closeBtn" id="closeBtn">Close</button>
+        </div>
+
+        <div class="menuList">
+          <a class="menuItem" href="/business-insurance">Business Insurance <span class="chev">›</span></a>
+          <a class="menuItem" href="/life-insurance">Life Insurance <span class="chev">›</span></a>
+          <a class="menuItem" href="/medicare">Medicare <span class="chev">›</span></a>
+          <a class="menuItem" href="/annuities">Annuities <span class="chev">›</span></a>
+          <a class="menuItem" href="/long-term-care">Long Term Care <span class="chev">›</span></a>
+          <a class="menuItem" href="/contact">Contact <span class="chev">›</span></a>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:12px;">
+          These links can be placeholders during migration.
+        </div>
+      </div>
+
+  <section class="hero heroSmall">
+    <div class="wrap heroInner">
+      <div class="heroCard">
+        <h1>Business Insurance</h1>
+        <p>
+          Coverage for contractors, transportation, retail, hospitality, healthcare, and more.
+          Search for your class and we’ll route you to the right options.
+        </p>
+
+        <form class="searchForm" id="classSearchForm" autocomplete="off">
+          <div class="searchRow">
+            <div class="searchField">
+              <label for="q">Search business class</label>
+              <input id="q" name="q" placeholder="e.g., Painters, HVAC, Trucking, Retail…" />
+            </div>
+            <button class="btn searchBtn" type="submit">Search</button>
+          </div>
+          <div class="fine">Tip: try “painters”, “roofing”, “trucking”, “restaurant”, “retail”.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap">
+      <div class="pageIntro">
+        <div class="pageTitleRow">
+          <h2>We offer a wide range of business solutions.</h2>
+          <div class="muted">Please contact us to start a quote.</div>
+        </div>
+      </div>
+
+      <div class="classGrid" id="classGrid">
+        <section class="classGroup">
+          <h3>Artisan &amp; Specialty Classes</h3>
+          <ul>
+            <li>Appliance Repair &amp; Installation</li>
+            <li>Carpenters</li>
+            <li>Cleaning &amp; Janitorial Services</li>
+            <li>Demolition &amp; Debris Removal</li>
+            <li>Electricians</li>
+            <li>Excavators</li>
+            <li>Handymen</li>
+            <li>HVAC Installers &amp; Technicians</li>
+            <li>Landscapers</li>
+            <li>Painters</li>
+            <li>Plumbers</li>
+            <li>Roofing Contractors</li>
+            <li>Tree Trimming Services</li>
+            <li>Window Cleaners</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Specialty</h3>
+          <ul>
+            <li>Aviation</li>
+            <li>Churches &amp; Religious Institutions</li>
+            <li>Energy</li>
+            <li>Equipment Rental</li>
+            <li>Garbage &amp; Repair Shops</li>
+            <li>Inland Marine</li>
+            <li>Manufacturing, Wholesalers &amp; Distributors</li>
+            <li>NonProfit &amp; Volunteer Organizations</li>
+            <li>Premises &amp; On-Site Liability</li>
+            <li>Public Entities</li>
+            <li>Realtors</li>
+            <li>Special Events</li>
+            <li>Storage &amp; Warehouse</li>
+            <li>Terrorism</li>
+            <li>Workers’ Compensation</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Automotive</h3>
+          <ul>
+            <li>Classic Cars &amp; Antique Automobiles</li>
+            <li>Classic Motorcycles</li>
+            <li>Commercial Auto Fleets</li>
+            <li>Historic Military Vehicles</li>
+            <li>Non-Standard Auto Insurance</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Personal</h3>
+          <ul>
+            <li>Accidents &amp; Personal Injuries</li>
+            <li>Identity Fraud &amp; Theft</li>
+            <li>In-Home Business</li>
+            <li>Jewelry</li>
+            <li>Personal Articles Floater</li>
+            <li>Umbrella</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Property &amp; Home</h3>
+          <ul>
+            <li>Apartment Buildings</li>
+            <li>Condo &amp; Homeowners</li>
+            <li>Condos (HOA)</li>
+            <li>Dwelling Fire</li>
+            <li>Flood / Home Insurance</li>
+            <li>Homeowners</li>
+            <li>Mobile &amp; Manufactured Homes</li>
+            <li>Rental Properties</li>
+            <li>Renter’s Insurance</li>
+            <li>Tenant Legal Liability</li>
+            <li>Townhomes</li>
+            <li>Vacant Properties</li>
+            <li>Vacation &amp; Secondary Properties</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Transportation</h3>
+          <ul>
+            <li>Cargo Shipping &amp; Freight</li>
+            <li>Delivery Services</li>
+            <li>Dump Trucks &amp; Haulers</li>
+            <li>Excess Auto</li>
+            <li>Limousine &amp; Chauffeured Transport</li>
+            <li>Ocean Marine</li>
+            <li>Shuttle Services</li>
+            <li>Taxi Services</li>
+            <li>Towing Services</li>
+            <li>Trucking</li>
+            <li>Valet Parking</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Hospitality</h3>
+          <ul>
+            <li>Ad Clubs</li>
+            <li>Bars, Pubs &amp; Taverns</li>
+            <li>Bed &amp; Breakfasts</li>
+            <li>Breweries</li>
+            <li>Comedy Clubs</li>
+            <li>Hotels &amp; Motels</li>
+            <li>Jazz Clubs</li>
+            <li>Liquor Liability</li>
+            <li>Live Music &amp; Event Venues</li>
+            <li>Lounges &amp; Night Clubs</li>
+            <li>Restaurants</li>
+            <li>Sports Venues</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Professional</h3>
+          <ul>
+            <li>Accountants &amp; Financial Service Providers</li>
+            <li>Alarm Contractors</li>
+            <li>Architects &amp; Engineers</li>
+            <li>Errors &amp; Omissions (E&amp;O)</li>
+            <li>Executive Liability Coverage</li>
+            <li>Film Production</li>
+            <li>Kidnap &amp; Ransom</li>
+            <li>Media Liability Insurance</li>
+            <li>Pet Groomers</li>
+            <li>Small Businesses</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Healthcare</h3>
+          <ul>
+            <li>Allied Medical Providers / Medical Liability</li>
+            <li>Cannabis Dispensaries</li>
+            <li>Hospitals</li>
+            <li>Medical Malpractice</li>
+            <li>Medical Research &amp; Manufacturing</li>
+            <li>Non-Emergency Medical Transport</li>
+            <li>Senior Care &amp; Assisted Living Facilities</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Agriculture &amp; Farming</h3>
+          <ul>
+            <li>Cannabis Nurseries</li>
+            <li>Crops &amp; Livestock</li>
+            <li>Equine</li>
+            <li>Farm &amp; Ranch Property</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Environmental</h3>
+          <ul>
+            <li>Environmental Contractors</li>
+            <li>Logging &amp; Lumber</li>
+            <li>Medical Waste Haulers</li>
+            <li>Oil &amp; Gas Consultants</li>
+            <li>Oil Haulers</li>
+            <li>Pollution</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Technology</h3>
+          <ul>
+            <li>Cyber Security &amp; Privacy</li>
+            <li>Technology Errors &amp; Omissions</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Recreation &amp; Leisure</h3>
+          <ul>
+            <li>Amateur Sports Leagues</li>
+            <li>Attractions</li>
+            <li>Boats &amp; Marine Recreation</li>
+            <li>Bowling Alleys</li>
+            <li>Gyms</li>
+            <li>Fitness &amp; Exercise Centers</li>
+            <li>Golf Courses</li>
+            <li>Motor and Powersports</li>
+            <li>Swimming Pools</li>
+            <li>Trampoline Parks &amp; Jumpzone</li>
+            <li>Travel Across the US / Mexico Border</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Natural Disaster</h3>
+          <ul>
+            <li>Earthquakes</li>
+            <li>Flood</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Retail</h3>
+          <ul>
+            <li>Beauty &amp; Personal Care Services</li>
+            <li>Car Dealerships with Open Lots</li>
+            <li>Car Washes</li>
+            <li>Clothing &amp; Apparel</li>
+            <li>Convenience Stores</li>
+            <li>Grocery Stores</li>
+            <li>Home Goods</li>
+            <li>Laundromats</li>
+            <li>Pawn Shops</li>
+            <li>Self-Storage Facilities</li>
+            <li>Supply Stores</li>
+            <li>Tobacco &amp; Body Piercing Shops</li>
+            <li>Upholstery Shops</li>
+            <li>Vape Stores</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Education</h3>
+          <ul>
+            <li>Charter Schools</li>
+            <li>Child Care</li>
+            <li>Interscholastic Sports &amp; College Athletes</li>
+            <li>K-12 Accident Insurance</li>
+            <li>Military Schools</li>
+            <li>Private Schools</li>
+            <li>Vocational Schools</li>
+          </ul>
+        </section>
+
+        <section class="classGroup">
+          <h3>Construction</h3>
+          <ul>
+            <li>Builder’s Risk</li>
+            <li>Custom Home Builders</li>
+            <li>General Contractors &amp; Subcontractors</li>
+            <li>Home Remodelers</li>
+            <li>Railroad Contractors</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="ctaBand">
+        <div class="ctaLeft">
+          <div class="ctaTitle">Ready to start a quote?</div>
+          <div class="ctaSub">Call us or submit your zip code on the homepage to get routed quickly.</div>
+        </div>
+        <div class="ctaRight">
+          <a class="ctaBtn" href="tel:+18137618881">Call (813) 761-8881</a>
+          <a class="ctaBtn ghost" href="/">Go to homepage</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<footer>
+    <div class="wrap">
+      <div class="foot">
+        <div><b>Merimack</b><div style="margin-top:6px;">One-stop shop for insurance.</div></div>
+        <div>
+          <div><b>Contact</b></div>
+          <div style="margin-top:6px;"><a href="mailto:info@merimack.com">info@merimack.com</a></div>
+          <div><a href="tel:+18137618881">(813) 761-8881</a></div>
+        </div>
+        <div>
+          <div><b>Legal</b></div>
+          <div style="margin-top:6px;"><a href="/privacy">Privacy Policy</a></div>
+          <div><a href="/terms">Terms &amp; Conditions</a></div>
+          <div><a href="/disclaimer">Disclaimer</a></div>
+        </div>
+        <div style="min-width:180px;text-align:right;">
+          © <span id="yr"></span> Merimack
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("yr").textContent = new Date().getFullYear();
+
+    // Menu overlay
+    const menuBtn = document.getElementById("menuBtn");
+    const overlay = document.getElementById("menuOverlay");
+    const closeBtn = document.getElementById("closeBtn");
+
+    function openMenu(){
+      overlay.classList.add("open");
+      menuBtn.setAttribute("aria-expanded","true");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMenu(){
+      overlay.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded","false");
+      document.body.style.overflow = "";
+    }
+
+    menuBtn.addEventListener("click", () => {
+      overlay.classList.contains("open") ? closeMenu() : openMenu();
+    });
+    closeBtn.addEventListener("click", closeMenu);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeMenu();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
+    });
+
+    // Highlight active category
+    document.querySelectorAll(".cats .cat").forEach(x=>x.classList.remove("active"));
+    const biz = Array.from(document.querySelectorAll(".cats .cat"))
+      .find(a => (a.getAttribute("href")||"").replace(/\/$/,"") === "/business-insurance");
+    if (biz) biz.classList.add("active");
+
+    // Client-side filter for class list
+    const form = document.getElementById("classSearchForm");
+    const q = document.getElementById("q");
+    const groups = Array.from(document.querySelectorAll(".classGroup"));
+
+    function normalize(s){ return (s||"").toLowerCase().replace(/\s+/g," ").trim(); }
+
+    function applyFilter(term){
+      const t = normalize(term);
+      if (!t){
+        groups.forEach(g=>{
+          g.style.display = "";
+          g.querySelectorAll("li").forEach(li=>{
+            li.style.display = "";
+            li.innerHTML = li.textContent;
+          });
+        });
+        return;
+      }
+
+      groups.forEach(g=>{
+        let anyVisible = false;
+        g.querySelectorAll("li").forEach(li=>{
+          const raw = li.textContent;
+          const hit = normalize(raw).includes(t);
+          li.style.display = hit ? "" : "none";
+          li.innerHTML = raw;
+
+          if (hit){
+            anyVisible = true;
+            const idx = raw.toLowerCase().indexOf(t);
+            if (idx >= 0){
+              const before = raw.slice(0, idx);
+              const mid = raw.slice(idx, idx + t.length);
+              const after = raw.slice(idx + t.length);
+              li.innerHTML = before + '<mark style="background:rgba(249,99,2,.22);padding:0 2px;border-radius:4px">' + mid + '</mark>' + after;
+            }
+          }
+        });
+        g.style.display = anyVisible ? "" : "none";
+      });
+    }
+
+    q.addEventListener("input", () => applyFilter(q.value));
+    form.addEventListener("submit", (e)=>{ e.preventDefault(); applyFilter(q.value); });
+  </script>
+
 </body>
 </html>
